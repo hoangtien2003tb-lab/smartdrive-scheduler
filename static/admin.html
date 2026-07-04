@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Điều Khiển Admin - SmartDrive</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- HTML2Canvas CDN for PNG export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-car-side"></i>
+                <span>SmartDrive</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-btn">Trang Học Viên</a>
+                <a href="#" class="nav-btn" id="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="card" style="padding: 1.25rem 2rem; margin-bottom: 1.5rem;">
+            <div class="admin-tabs" style="border-bottom: none;">
+                <button class="tab-btn active" data-tab="schedule">
+                    <i class="fa-solid fa-calendar-days"></i> Lịch học tuần này
+                </button>
+                <button class="tab-btn" data-tab="submissions">
+                    <i class="fa-solid fa-user-graduate"></i> Học viên đăng ký
+                </button>
+            </div>
+        </div>
+
+        <!-- 1. TAB: SCHEDULE -->
+        <div id="tab-schedule" class="tab-content active">
+            
+            <!-- Statistics Dashboard Metrics -->
+            <div class="metrics-container">
+                <div class="metric-card">
+                    <div class="metric-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="metric-details">
+                        <span class="metric-value" id="stat-total-students">0</span>
+                        <span class="metric-label">Học viên đăng ký</span>
+                    </div>
+                </div>
+                <div class="metric-card accent">
+                    <div class="metric-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <div class="metric-details">
+                        <span class="metric-value" id="stat-scheduled-lessons">0</span>
+                        <span class="metric-label">Ca đã xếp</span>
+                    </div>
+                </div>
+                <div class="metric-card success">
+                    <div class="metric-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                    <div class="metric-details">
+                        <span class="metric-value" id="stat-fill-rate">0%</span>
+                        <span class="metric-label">Tỷ lệ lấp đầy</span>
+                    </div>
+                </div>
+                <div class="metric-card warning">
+                    <div class="metric-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                    <div class="metric-details">
+                        <span class="metric-value" id="stat-unscheduled">0</span>
+                        <span class="metric-label">Chưa xếp được</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ratios-panel">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: #fff;">Tỉ lệ Hạng xe đăng ký học</h3>
+                <div class="ratio-bar-container">
+                    <div class="ratio-item">
+                        <span class="ratio-label">B số sàn</span>
+                        <div class="ratio-bar-bg"><div class="ratio-bar-fill bsan" id="ratio-fill-bsan"></div></div>
+                        <span class="ratio-value" id="ratio-val-bsan">0%</span>
+                    </div>
+                    <div class="ratio-item">
+                        <span class="ratio-label">B tự động</span>
+                        <div class="ratio-bar-bg"><div class="ratio-bar-fill btudong" id="ratio-fill-btudong"></div></div>
+                        <span class="ratio-value" id="ratio-val-btudong">0%</span>
+                    </div>
+                    <div class="ratio-item">
+                        <span class="ratio-label">Hạng C1</span>
+                        <div class="ratio-bar-bg"><div class="ratio-bar-fill c1" id="ratio-fill-c1"></div></div>
+                        <span class="ratio-value" id="ratio-val-c1">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Selector -->
+            <div class="week-select-container">
+                <div class="week-nav">
+                    <button class="btn btn-secondary btn-sm" id="btn-prev-week">
+                        <i class="fa-solid fa-chevron-left"></i> Tuần trước
+                    </button>
+                    <span class="week-title" id="display-week-title">Tuần từ: Thứ Hai 06/07/2026</span>
+                    <button class="btn btn-secondary btn-sm" id="btn-next-week">
+                        Tuần sau <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <label for="week-picker" style="font-size: 0.9rem; color: var(--text-muted);">Chọn ngày khác:</label>
+                    <input type="date" id="week-picker" class="form-control" style="padding: 0.4rem 0.8rem; width: auto;">
+                </div>
+            </div>
+
+            <!-- Schedule Card table panel -->
+            <div class="card" id="schedule-card-panel" style="padding: 1.5rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h2 style="margin-bottom: 0.25rem;">Thời khóa biểu học lái xe tuần này</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">
+                            Nhấn <b>Tự động xếp lịch</b> để hệ thống xếp ngẫu nhiên tối đa 2 bạn học viên/ca (mỗi người tối đa 1 ca/ngày).
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <button class="btn btn-secondary" id="btn-reload-schedule">
+                            <i class="fa-solid fa-rotate"></i> Tải lại
+                        </button>
+                        <button class="btn btn-secondary" id="btn-export-png" style="background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3);">
+                            <i class="fa-solid fa-image"></i> Xuất ảnh lịch học
+                        </button>
+                        <button class="btn btn-primary" id="btn-auto-schedule" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Tự động xếp lịch
+                        </button>
+                        <button class="btn btn-primary" id="btn-save-schedule">
+                            <i class="fa-solid fa-floppy-disk"></i> Lưu lịch tuần này
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search and Filter Bar -->
+                <div class="filter-search-container">
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="schedule-search" class="form-control search-control" placeholder="Tìm kiếm nhanh học viên...">
+                    </div>
+                    <select id="schedule-class-filter" class="form-control filter-select" style="background-color: #0f172a; color: #fff;">
+                        <option value="all">Tất cả Hạng xe</option>
+                        <option value="B số sàn">B số sàn</option>
+                        <option value="B tự động">B tự động</option>
+                        <option value="C1">C1</option>
+                    </select>
+                </div>
+
+                <div class="schedule-table-container">
+                    <table class="schedule-table" id="schedule-main-table">
+                        <thead>
+                            <tr id="schedule-headers">
+                                <th>Ca học</th>
+                                <th>Thứ 2</th>
+                                <th>Thứ 3</th>
+                                <th>Thứ 4</th>
+                                <th>Thứ 5</th>
+                                <th>Thứ 6</th>
+                                <th>Thứ 7</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Unscheduled list panel -->
+                <div id="unscheduled-panel" style="display: none;">
+                    <h3 style="color: var(--danger); font-size: 1.1rem; margin-bottom: 0.75rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Học viên chưa xếp được ca học nào tuần này (Do lịch đăng ký bị trùng lắp/quá tải)
+                    </h3>
+                    <div id="unscheduled-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <!-- Badges populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. TAB: SUBMISSIONS -->
+        <div id="tab-submissions" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h2>Danh sách học viên đăng ký</h2>
+                        <p class="subtitle" style="margin-bottom: 0.5rem;">Danh sách học viên đã gửi thông tin thời gian rảnh và số buổi đã học.</p>
+                    </div>
+                </div>
+                
+                <!-- Search and filter submissions with CRUD creation -->
+                <div class="filter-search-container" style="margin-bottom: 2rem; gap: 1rem;">
+                    <div class="search-wrapper" style="flex: 1;">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="submission-search" class="form-control search-control" placeholder="Tìm kiếm theo Tên hoặc Số điện thoại...">
+                    </div>
+                    <select id="submission-class-filter" class="form-control filter-select" style="background-color: #0f172a; color: #fff; width: auto;">
+                        <option value="all">Tất cả Hạng xe</option>
+                        <option value="B số sàn">B số sàn</option>
+                        <option value="B tự động">B tự động</option>
+                        <option value="C1">C1</option>
+                    </select>
+                    <button class="btn btn-primary" id="btn-add-student" style="padding: 0 1.5rem; white-space: nowrap;">
+                        <i class="fa-solid fa-user-plus"></i> Thêm học viên mới
+                    </button>
+                </div>
+
+                <div class="submissions-list" id="submissions-list">
+                    <!-- Dynamic submissions items -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toast"></div>
+
+    <!-- MODAL: MANUAL SCHEDULE ASSIGNMENT -->
+    <div class="modal-overlay" id="manual-schedule-modal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Xếp lịch thủ công</h3>
+                <button class="modal-close" id="btn-close-manual-modal">&times;</button>
+            </div>
+            <form id="manual-schedule-form">
+                <input type="hidden" id="manual-day">
+                <input type="hidden" id="manual-slot-id">
+                
+                <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">Lịch chọn:</span>
+                    <strong id="manual-slot-display" style="display: block; color: var(--accent); margin-top: 0.25rem;">Thứ Hai - Ca sáng</strong>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="manual-student-select">Chọn học viên <span style="color: var(--danger);">*</span></label>
+                    <select id="manual-student-select" class="form-control" required style="background-color: #1e293b; color: #fff;">
+                        <option value="">-- Chọn học viên --</option>
+                    </select>
+                </div>
+
+                <div class="btn-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-manual-modal">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary">Xếp vào ca này</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: QUICK NOTIFY POPUP (ZALO / COPY) -->
+    <div class="modal-overlay" id="notify-modal">
+        <div class="modal-container" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3>Thông báo lịch học học viên</h3>
+                <button class="modal-close" id="btn-close-notify-modal">&times;</button>
+            </div>
+            
+            <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--border-color);">
+                <div id="notify-student-name" style="font-weight: 700; font-size: 1.1rem; color: #fff;">Nguyễn Văn A</div>
+                <div id="notify-student-details" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">Hạng xe: B số sàn | SĐT: 0912345678</div>
+            </div>
+
+            <div class="notify-options">
+                <button class="notify-card-btn" id="btn-notify-zalo">
+                    <i class="fa-solid fa-comment-dots fa-zalo"></i>
+                    <div>
+                        <strong style="color: #fff; display: block; font-size: 0.95rem;">Gửi qua tin nhắn Zalo</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Mở trang zalo.me bắt đầu nhắn tin với học viên</span>
+                    </div>
+                </button>
+                
+                <button class="notify-card-btn" id="btn-notify-copy">
+                    <i class="fa-regular fa-clipboard fa-copy"></i>
+                    <div>
+                        <strong style="color: #fff; display: block; font-size: 0.95rem;">Copy tin nhắn thông báo mẫu</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Sao chép nội dung lịch học vào khay nhớ tạm</span>
+                    </div>
+                </button>
+            </div>
+
+            <div class="notify-template-preview">
+                <div style="font-weight: 600; color: #fff; margin-bottom: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Bản xem trước tin nhắn:</div>
+                <p id="notify-preview-text" style="white-space: pre-line; line-height: 1.4;">Đang chuẩn bị...</p>
+            </div>
+
+            <div class="btn-actions" style="margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-notify-modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD/EDIT STUDENT (ADMIN CRUD) -->
+    <div class="modal-overlay" id="student-modal">
+        <div class="modal-container" style="max-width: 650px;">
+            <div class="modal-header">
+                <h3 id="student-modal-title">Thêm học viên mới</h3>
+                <button class="modal-close" id="btn-close-student-modal">&times;</button>
+            </div>
+            <form id="student-modal-form">
+                <!-- Keep phone as unique identifier, or read id from backend if we want. Phone-based insert/update is default -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="adm-std-name">Họ và tên <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="adm-std-name" class="form-control" placeholder="Nguyễn Văn A" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adm-std-phone">Số điện thoại <span style="color: var(--danger);">*</span></label>
+                        <input type="tel" id="adm-std-phone" class="form-control" placeholder="0912345678" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="adm-std-email">Email</label>
+                        <input type="email" id="adm-std-email" class="form-control" placeholder="email@vi-du.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="adm-std-notes">Ghi chú</label>
+                        <input type="text" id="adm-std-notes" class="form-control" placeholder="Thông tin thêm...">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Hạng xe đăng ký <span style="color: var(--danger);">*</span></label>
+                        <div class="license-options">
+                            <input type="radio" name="adm_license_type" id="adm_lic_bsan" value="B số sàn" class="license-radio-btn" checked>
+                            <label for="adm_lic_bsan" class="license-radio-label">B Số Sàn</label>
+
+                            <input type="radio" name="adm_license_type" id="adm_lic_btudong" value="B tự động" class="license-radio-btn">
+                            <label for="adm_lic_btudong" class="license-radio-label">B Tự Động</label>
+
+                            <input type="radio" name="adm_license_type" id="adm_lic_c1" value="C1" class="license-radio-btn">
+                            <label for="adm_lic_c1" class="license-radio-label">C1</label>
+                        </div>
+                    </div>
+                    <div class="form-group" style="flex: 1; min-width: 150px;">
+                        <label for="adm-std-completed">Số ca học đã hoàn thành <span style="color: var(--danger);">*</span></label>
+                        <select id="adm-std-completed" class="form-control" style="background-color: #1e293b; color: #fff;">
+                            <option value="0">0 buổi (Mới học)</option>
+                            <option value="1">1 buổi</option>
+                            <option value="2">2 buổi</option>
+                            <option value="3">3 buổi (Xong)</option>
+                            <option value="4">4 buổi trở lên</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="availability-section" style="margin-top: 1.5rem;">
+                    <label style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Đăng ký ca rảnh của học viên (Thứ 2 - Thứ 7)</label>
+                    <div class="grid-wrapper" style="margin-bottom: 1rem;">
+                        <table class="avail-table">
+                            <thead>
+                                <tr id="adm-table-headers">
+                                    <th>Ngày</th>
+                                    <!-- Ca học columns -->
+                                </tr>
+                            </thead>
+                            <tbody id="adm-table-body">
+                                <!-- Days rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="btn-actions">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-student-modal">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-primary">Lưu học viên</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

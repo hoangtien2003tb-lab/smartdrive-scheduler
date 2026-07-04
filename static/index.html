@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký & Tra Cứu Lịch Học Lái Xe - SmartDrive</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-car-side"></i>
+                <span>SmartDrive</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-btn active">Trang Học Viên</a>
+                <a href="admin.html" class="nav-btn">Khu vực Admin</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Student Tabs Navigation -->
+        <div class="card" style="padding: 1.25rem 2rem; margin-bottom: 1.5rem;">
+            <div class="admin-tabs" style="border-bottom: none;">
+                <button class="tab-btn active" data-tab="register" id="nav-tab-register">
+                    <i class="fa-regular fa-calendar-plus"></i> Đăng ký lịch rảnh
+                </button>
+                <button class="tab-btn" data-tab="lookup" id="nav-tab-lookup">
+                    <i class="fa-solid fa-magnifying-glass"></i> Tra cứu lịch học
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT 1: REGISTER -->
+        <div id="tab-register" class="tab-content active">
+            <div class="card" id="form-container">
+                <h1>Đăng Ký Lịch Học Lái Xe</h1>
+                <p class="subtitle">Cung cấp thông tin liên hệ, hạng xe đăng ký và các ca rảnh của bạn trong tuần để trung tâm xếp lịch phù hợp.</p>
+                
+                <form id="student-form">
+                    <h2 style="font-size: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
+                        <i class="fa-regular fa-user" style="margin-right: 0.5rem; color: var(--accent);"></i> Thông tin cá nhân
+                    </h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Họ và tên <span style="color: var(--danger);">*</span></label>
+                            <input type="text" id="name" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">Số điện thoại <span style="color: var(--danger);">*</span></label>
+                            <input type="tel" id="phone" class="form-control" placeholder="Ví dụ: 0912345678" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email (Không bắt buộc)</label>
+                            <input type="email" id="email" class="form-control" placeholder="email@vi-du.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Ghi chú bổ sung (Không bắt buộc)</label>
+                            <input type="text" id="notes" class="form-control" placeholder="Ví dụ: Xe màu đen, v.v.">
+                        </div>
+                    </div>
+
+                    <h2 style="font-size: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.25rem; margin-top: 2rem;">
+                        <i class="fa-solid fa-car-rear" style="margin-right: 0.5rem; color: var(--accent);"></i> Cấu hình học tập
+                    </h2>
+
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label>Đăng ký học Hạng xe <span style="color: var(--danger);">*</span></label>
+                            <div class="license-options">
+                                <input type="radio" name="license_type" id="lic_bsan" value="B số sàn" class="license-radio-btn" checked>
+                                <label for="lic_bsan" class="license-radio-label">B Số Sàn</label>
+
+                                <input type="radio" name="license_type" id="lic_btudong" value="B tự động" class="license-radio-btn">
+                                <label for="lic_btudong" class="license-radio-label">B Tự Động</label>
+
+                                <input type="radio" name="license_type" id="lic_c1" value="C1" class="license-radio-btn">
+                                <label for="lic_c1" class="license-radio-label">C1</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="flex: 1; min-width: 200px;">
+                            <label for="lessons-completed">Số buổi đã học thực tế <span style="color: var(--danger);">*</span></label>
+                            <select id="lessons-completed" class="form-control" style="background-color: #0f172a; color: #fff;">
+                                <option value="0">0 buổi (Mới bắt đầu)</option>
+                                <option value="1">1 buổi</option>
+                                <option value="2">2 buổi</option>
+                                <option value="3">3 buổi (Đã hoàn thành)</option>
+                                <option value="4">4 buổi trở lên</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="availability-section">
+                        <h2 style="font-size: 1.25rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1.25rem;">
+                            <i class="fa-regular fa-calendar-check" style="margin-right: 0.5rem; color: var(--accent);"></i> Đăng ký ca rảnh (Thứ 2 - Thứ 7)
+                        </h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+                            Vui lòng tích chọn những ca bạn rảnh có thể học. Hệ thống sẽ tự chọn ra một ca phù hợp nhất để xếp lớp cho bạn (Tối đa xếp 1 buổi/tuần, số buổi học đã học $\ge 3$ không cần xếp lịch).
+                        </p>
+
+                        <div class="grid-wrapper">
+                            <table class="avail-table">
+                                <thead>
+                                    <tr id="table-headers">
+                                        <th>Ngày trong tuần</th>
+                                        <!-- Dynamic columns -->
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="text-align: right; margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary" id="submit-btn">
+                            <i class="fa-regular fa-paper-plane"></i> Gửi thông tin đăng ký
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card success-screen" id="success-container" style="display: none;">
+                <i class="fa-regular fa-circle-check success-icon"></i>
+                <h1>Đăng Ký Thành Công!</h1>
+                <p class="subtitle" style="margin-top: 0.5rem; margin-bottom: 2rem;">
+                    Cảm ơn bạn. Thông tin lịch rảnh đã được ghi nhận. Bạn có thể sang thẻ <b>"Tra cứu lịch học"</b> để tra cứu lịch của mình sau khi ban quản trị xếp lớp xong.
+                </p>
+                <button class="btn btn-primary" id="btn-back">
+                    <i class="fa-solid fa-arrow-rotate-left"></i> Đăng ký tiếp cho người khác
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT 2: LOOKUP -->
+        <div id="tab-lookup" class="tab-content">
+            <div class="card">
+                <h1>Tra Cứu Lịch Học Cá Nhân</h1>
+                <p class="subtitle">Nhập số điện thoại của bạn để kiểm tra lịch học lái xe đã được xếp cho tuần này.</p>
+                
+                <form id="lookup-form" style="display: flex; gap: 1rem; max-width: 600px; margin-bottom: 2rem;">
+                    <div class="form-group" style="flex: 1;">
+                        <input type="tel" id="lookup-phone" class="form-control" placeholder="Nhập số điện thoại đăng ký (Ví dụ: 0912345678)" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="lookup-btn" style="padding: 0 2rem;">
+                        <i class="fa-solid fa-magnifying-glass"></i> Tra cứu
+                    </button>
+                </form>
+
+                <!-- Dynamic Lookup Results Container -->
+                <div id="lookup-result-container" style="display: none; animation: fadeIn 0.4s ease-out;">
+                    <!-- Results dynamically loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/student.js"></script>
+</body>
+</html>

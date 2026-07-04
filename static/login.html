@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập Admin - SmartDrive</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="header-container" style="justify-content: center;">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-car-side"></i>
+                <span>SmartDrive</span>
+            </a>
+        </div>
+    </header>
+
+    <main style="display: flex; align-items: center; justify-content: center; min-height: 70vh;">
+        <div class="card" style="width: 100%; max-width: 420px; padding: 2.5rem 2rem;">
+            <h1 style="font-size: 1.75rem; text-align: center; margin-bottom: 0.5rem;">Bảng Quản Trị</h1>
+            <p class="subtitle" style="text-align: center; margin-bottom: 2rem; font-size: 0.95rem;">Vui lòng nhập mật khẩu quản trị viên để tiếp tục.</p>
+            
+            <form id="login-form">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="password">Mật khẩu Admin</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" class="form-control" placeholder="••••••••" required style="padding-right: 2.5rem; width: 100%;">
+                        <button type="button" id="toggle-pwd-btn" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%; font-weight: 700;">
+                    <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập hệ thống
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loginForm = document.getElementById("login-form");
+            const passwordInput = document.getElementById("password");
+            const togglePwdBtn = document.getElementById("toggle-pwd-btn");
+            const toast = document.getElementById("toast");
+
+            const showToast = (message, type = "error") => {
+                toast.textContent = message;
+                toast.className = `toast show ${type}`;
+                setTimeout(() => {
+                    toast.className = "toast";
+                }, 3500);
+            };
+
+            // Toggle show/hide password
+            togglePwdBtn.addEventListener("click", () => {
+                const icon = togglePwdBtn.querySelector("i");
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    icon.className = "fa-regular fa-eye-slash";
+                } else {
+                    passwordInput.type = "password";
+                    icon.className = "fa-regular fa-eye";
+                }
+            });
+
+            // Handle login submit
+            loginForm.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const pwdVal = passwordInput.value.trim();
+                
+                try {
+                    const response = await fetch("/api/admin/login", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ password: pwdVal })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        localStorage.setItem("admin_token", result.token);
+                        window.location.href = "admin.html";
+                    } else {
+                        throw new Error(result.detail || "Đăng nhập thất bại.");
+                    }
+                } catch (error) {
+                    showToast(error.message, "error");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
