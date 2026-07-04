@@ -13,22 +13,26 @@
 
     <header>
         <div class="header-container">
-            <a href="#" class="logo">
-                <i class="fa-solid fa-car-side"></i>
-                <span>SmartDrive</span>
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+                <span class="logo-text">SmartDrive</span>
             </a>
-            <div class="nav-links">
-                <a href="index.html" class="nav-btn">Trang Học Viên</a>
-                <a href="#" class="nav-btn" id="btn-logout">
+            <nav class="nav-links">
+                <a href="index.html" class="nav-btn">
+                    <i class="fa-solid fa-graduation-cap"></i> Học Viên
+                </a>
+                <a href="#" class="nav-btn active" id="btn-logout">
                     <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                 </a>
-            </div>
+            </nav>
         </div>
     </header>
 
     <main>
-        <div class="card" style="padding: 1.25rem 2rem; margin-bottom: 1.5rem;">
-            <div class="admin-tabs" style="border-bottom: none;">
+        <div class="tab-nav-card">
+            <div class="admin-tabs">
                 <button class="tab-btn active" data-tab="schedule">
                     <i class="fa-solid fa-calendar-days"></i> Lịch học tuần này
                 </button>

@@ -4,61 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập Admin - SmartDrive</title>
+    <meta name="description" content="Trang đăng nhập quản trị viên hệ thống xếp lịch học lái xe SmartDrive.">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <header>
-        <div class="header-container" style="justify-content: center;">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-car-side"></i>
-                <span>SmartDrive</span>
-            </a>
-        </div>
-    </header>
+    <div class="login-page-wrapper">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="login-logo-icon">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+                <span class="login-title">SmartDrive</span>
+            </div>
 
-    <main style="display: flex; align-items: center; justify-content: center; min-height: 70vh;">
-        <div class="card" style="width: 100%; max-width: 420px; padding: 2.5rem 2rem;">
-            <h1 style="font-size: 1.75rem; text-align: center; margin-bottom: 0.5rem;">Bảng Quản Trị</h1>
-            <p class="subtitle" style="text-align: center; margin-bottom: 2rem; font-size: 0.95rem;">Vui lòng nhập mật khẩu quản trị viên để tiếp tục.</p>
-            
+            <div style="text-align:center; margin-bottom: 2rem;">
+                <h1 style="font-size:1.4rem; margin-bottom: 0.4rem;">Khu vực Admin</h1>
+                <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                    Nhập mật khẩu quản trị viên để tiếp tục
+                </p>
+            </div>
+
             <form id="login-form">
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label for="password">Mật khẩu Admin</label>
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label for="password">
+                        <i class="fa-solid fa-lock" style="margin-right:0.35rem; color: var(--text-tertiary);"></i>
+                        Mật khẩu Admin
+                    </label>
                     <div style="position: relative;">
-                        <input type="password" id="password" class="form-control" placeholder="••••••••" required style="padding-right: 2.5rem; width: 100%;">
-                        <button type="button" id="toggle-pwd-btn" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer;">
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-control"
+                            placeholder="Nhập mật khẩu..."
+                            required
+                            style="padding-right: 3rem;"
+                            autofocus
+                        >
+                        <button
+                            type="button"
+                            id="toggle-pwd-btn"
+                            style="
+                                position: absolute; right: 0.875rem; top: 50%;
+                                transform: translateY(-50%);
+                                background: none; border: none;
+                                color: var(--text-tertiary); cursor: pointer;
+                                transition: color 0.2s; padding: 0.25rem;
+                                display: flex; align-items: center;
+                            "
+                        >
                             <i class="fa-regular fa-eye"></i>
                         </button>
                     </div>
                 </div>
-                
-                <button type="submit" class="btn btn-primary" style="width: 100%; font-weight: 700;">
-                    <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập hệ thống
+
+                <button type="submit" class="btn btn-primary" id="login-btn" style="width: 100%; padding: 0.875rem; font-size: 0.95rem;">
+                    <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
                 </button>
             </form>
+
+            <div style="margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid var(--border); text-align:center;">
+                <a href="index.html" style="color: var(--text-secondary); font-size: 0.82rem; text-decoration: none; transition: color 0.2s;"
+                   onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-secondary)'">
+                    <i class="fa-solid fa-arrow-left" style="margin-right: 0.35rem;"></i>
+                    Quay lại trang học viên
+                </a>
+            </div>
         </div>
-    </main>
+    </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const loginForm = document.getElementById("login-form");
+            const loginForm    = document.getElementById("login-form");
             const passwordInput = document.getElementById("password");
             const togglePwdBtn = document.getElementById("toggle-pwd-btn");
-            const toast = document.getElementById("toast");
+            const loginBtn     = document.getElementById("login-btn");
+            const toast        = document.getElementById("toast");
+
+            // Redirect if already logged in
+            if (localStorage.getItem("admin_token")) {
+                window.location.replace("admin.html");
+            }
 
             const showToast = (message, type = "error") => {
                 toast.textContent = message;
                 toast.className = `toast show ${type}`;
-                setTimeout(() => {
-                    toast.className = "toast";
-                }, 3500);
+                setTimeout(() => { toast.className = "toast"; }, 3500);
             };
 
-            // Toggle show/hide password
+            // Toggle password visibility
             togglePwdBtn.addEventListener("click", () => {
                 const icon = togglePwdBtn.querySelector("i");
                 if (passwordInput.type === "password") {
@@ -70,30 +107,33 @@
                 }
             });
 
-            // Handle login submit
+            // Handle login
             loginForm.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const pwdVal = passwordInput.value.trim();
-                
+
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<span class="spinner"></span> Đang xác thực...';
+
                 try {
                     const response = await fetch("/api/admin/login", {
                         method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
+                        headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ password: pwdVal })
                     });
-                    
                     const result = await response.json();
-                    
+
                     if (response.ok) {
                         localStorage.setItem("admin_token", result.token);
-                        window.location.href = "admin.html";
+                        showToast("Đăng nhập thành công! Đang chuyển hướng...", "success");
+                        setTimeout(() => { window.location.href = "admin.html"; }, 800);
                     } else {
-                        throw new Error(result.detail || "Đăng nhập thất bại.");
+                        throw new Error(result.detail || "Mật khẩu không đúng.");
                     }
                 } catch (error) {
                     showToast(error.message, "error");
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Đăng nhập';
                 }
             });
         });
