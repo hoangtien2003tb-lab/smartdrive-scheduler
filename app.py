@@ -336,7 +336,9 @@ def save_schedule(req: ScheduleSaveRequest, authorized: bool = Depends(verify_ad
         conn.close()
 
 # --- Serve Static Files ---
-static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+# Resolve static dir relative to this file (app.py), works for both local and Vercel
+_base_dir = os.path.dirname(os.path.abspath(__file__))
+static_dir = os.path.join(_base_dir, "static")
 if not os.path.exists(static_dir):
     os.makedirs(static_dir)
 
