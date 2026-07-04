@@ -5,23 +5,17 @@
       "src": "api/index.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "15mb"
+        "maxLambdaSize": "15mb",
+        "includeFiles": [
+          "static/**",
+          "database.py",
+          "scheduler.py",
+          "app.py"
+        ]
       }
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "api/index.py"
-    },
-    {
-      "src": "/static/(.*)",
-      "dest": "static/$1"
-    },
-    {
-      "src": "/(.*\\.(html|css|js|png|jpg|ico|svg|woff2?))",
-      "dest": "static/$1"
-    },
     {
       "src": "/(.*)",
       "dest": "api/index.py"
